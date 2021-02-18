@@ -1,4 +1,4 @@
-const { request } = require("express");
+const { request, response } = require("express");
 const express = require("express");
 const app = express();
 
@@ -27,17 +27,28 @@ const persons = [
   },
 ];
 
+//GET ALL PERSONS
+app.get("/api/persons", (request, response) => {
+  console.log("GET persons");
+  response.json(persons);
+});
 
-app.get('/api/persons',(request,response)=>{
-    console.log('GET persons')
-    response.json(persons)
-})
+//GET A SINGLE PERSON
+app.get("/api/persons/:id", (request, response) => {
+  const { id } = request.params;
+  const person = persons.find((person) => person.id === Number(id));
+  if (person) {
+    response.json(person);
+  } else {
+    response.status(404).end();
+  }
+});
 
-app.get("/info",(request,response)=>{
+app.get("/info", (request, response) => {
   response.send(`
   <p>Phonebook has info for ${persons.length} people</p> 
   <p>${new Date()}</p>
-  `)
-})
+  `);
+});
 
-app.listen(PORT,()=> console.log(`Server running on port ${PORT}`))
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
