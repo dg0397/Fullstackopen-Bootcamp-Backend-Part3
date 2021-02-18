@@ -1,5 +1,5 @@
 const express = require("express");
-const morgan = require('morgan');
+const morgan = require("morgan");
 const app = express();
 
 const PORT = 3001;
@@ -30,8 +30,18 @@ let persons = [
 function generateId() {
   return Math.floor(Math.random() * 10000000);
 }
+//Create new morgan token
+morgan.token("data", function (req, res) {
+  if (req.body && req.method === "POST") {
+    return JSON.stringify(req.body);
+  }
+});
+
 //
-app.use(morgan("tiny"))
+app.use(express.json());
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :data")
+);
 //GET ALL PERSONS
 app.get("/api/persons", (request, response) => {
   console.log("GET persons");
@@ -58,8 +68,6 @@ app.delete("/api/persons/:id", (request, response) => {
 });
 
 //CREATE A NEW RESOURCE
-
-app.use(express.json());
 
 app.post("/api/persons", (request, response) => {
   const body = request.body;
