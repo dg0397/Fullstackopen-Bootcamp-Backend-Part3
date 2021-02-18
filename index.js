@@ -4,7 +4,7 @@ const app = express();
 
 const PORT = 3001;
 
-const persons = [
+let persons = [
   {
     name: "Arto Hellas",
     number: "040-123456",
@@ -25,6 +25,11 @@ const persons = [
     number: "39-23-6423122",
     id: 4,
   },
+  {
+    name: "Dionisio",
+    number: "39-23-6423122",
+    id: 5,
+  },
 ];
 
 //GET ALL PERSONS
@@ -42,6 +47,14 @@ app.get("/api/persons/:id", (request, response) => {
   } else {
     response.status(404).end();
   }
+});
+
+//DELETE A SINGLE RESOURCE
+app.delete("/api/persons/:id", (request, response) => {
+  const { id } = request.params;
+  persons = persons.filter((person) => person.id !== Number(id));
+
+  response.status(204).end();
 });
 
 app.get("/info", (request, response) => {
