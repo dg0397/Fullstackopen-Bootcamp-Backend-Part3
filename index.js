@@ -1,5 +1,5 @@
-const { request, response } = require("express");
 const express = require("express");
+const morgan = require('morgan');
 const app = express();
 
 const PORT = 3001;
@@ -30,7 +30,8 @@ let persons = [
 function generateId() {
   return Math.floor(Math.random() * 10000000);
 }
-
+//
+app.use(morgan("tiny"))
 //GET ALL PERSONS
 app.get("/api/persons", (request, response) => {
   console.log("GET persons");
