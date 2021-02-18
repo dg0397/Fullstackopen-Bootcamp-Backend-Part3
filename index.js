@@ -25,12 +25,11 @@ let persons = [
     number: "39-23-6423122",
     id: 4,
   },
-  {
-    name: "Dionisio",
-    number: "39-23-6423122",
-    id: 5,
-  },
 ];
+
+function generateId() {
+  return Math.floor(Math.random() * 10000000);
+}
 
 //GET ALL PERSONS
 app.get("/api/persons", (request, response) => {
@@ -55,6 +54,28 @@ app.delete("/api/persons/:id", (request, response) => {
   persons = persons.filter((person) => person.id !== Number(id));
 
   response.status(204).end();
+});
+
+//CREATE A NEW RESOURCE
+
+app.use(express.json());
+
+app.post("/api/persons", (request, response) => {
+  const body = request.body;
+
+  if (!body.name || !body.phone) {
+    return response.status(400).json({ error: "content-missing" });
+  }
+
+  const person = {
+    name: body.name,
+    phone: String(body.phone),
+    id: generateId(),
+  };
+
+  persons = persons.concat(person);
+
+  response.json(person);
 });
 
 app.get("/info", (request, response) => {
