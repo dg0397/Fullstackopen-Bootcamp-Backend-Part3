@@ -1,5 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require('cors');
+
 const app = express();
 
 const PORT = 3001;
@@ -37,11 +39,13 @@ morgan.token("data", function (req, res) {
   }
 });
 
-//
+// MIDDLEWARES
+app.use(cors())
 app.use(express.json());
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :data")
 );
+
 //GET ALL PERSONS
 app.get("/api/persons", (request, response) => {
   console.log("GET persons");
@@ -72,7 +76,7 @@ app.delete("/api/persons/:id", (request, response) => {
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
-  if (!body.name || !body.phone) {
+  if (!body.name || !body.number) {
     return response.status(400).json({ error: "content missing" });
   } else if (persons.map((person) => person.name).includes(body.name)) {
     return response.status(400).json({ error: "name must be unique" });
@@ -80,7 +84,7 @@ app.post("/api/persons", (request, response) => {
 
   const person = {
     name: body.name,
-    phone: String(body.phone),
+    number: String(body.number),
     id: generateId(),
   };
 
@@ -89,6 +93,7 @@ app.post("/api/persons", (request, response) => {
   response.json(person);
 });
 
+//GET INFO
 app.get("/info", (request, response) => {
   response.send(`
   <p>Phonebook has info for ${persons.length} people</p> 
