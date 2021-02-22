@@ -1,33 +1,37 @@
+require("dotenv").config();
+
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 
 const app = express();
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3001;
 
-let persons = [
-  {
-    name: "Arto Hellas",
-    number: "040-123456",
-    id: 1,
-  },
-  {
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-    id: 2,
-  },
-  {
-    name: "Dan Abramov",
-    number: "12-43-234345",
-    id: 3,
-  },
-  {
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-    id: 4,
-  },
-];
+const Person = require("./models/person");
+
+//let persons = [
+//  {
+//    name: "Arto Hellas",
+//    number: "040-123456",
+//    id: 1,
+//  },
+//  {
+//    name: "Ada Lovelace",
+//    number: "39-44-5323523",
+//    id: 2,
+//  },
+//  {
+//    name: "Dan Abramov",
+//    number: "12-43-234345",
+//    id: 3,
+//  },
+//  {
+//    name: "Mary Poppendieck",
+//    number: "39-23-6423122",
+//    id: 4,
+//  },
+//];
 
 function generateId() {
   return Math.floor(Math.random() * 10000000);
@@ -45,13 +49,20 @@ app.use(express.json());
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :data")
 );
-app.use(express.static('build'))
-
+app.use(express.static("build"));
 
 //GET ALL PERSONS
+//app.get("/api/persons", (request, response) => {
+//  console.log("GET persons");
+//  response.json(persons);
+//});
+
+//With MongoDB
+
 app.get("/api/persons", (request, response) => {
-  console.log("GET persons");
-  response.json(persons);
+  Person.find({}).then((people) => {
+    response.json(people);
+  });
 });
 
 //GET A SINGLE PERSON
