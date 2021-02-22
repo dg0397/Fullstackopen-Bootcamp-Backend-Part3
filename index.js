@@ -91,19 +91,19 @@ app.post("/api/persons", (request, response) => {
 
   if (!body.name || !body.number) {
     return response.status(400).json({ error: "content missing" });
-  } else if (persons.map((person) => person.name).includes(body.name)) {
-    return response.status(400).json({ error: "name must be unique" });
   }
+  //if (persons.map((person) => person.name).includes(body.name)) {
+  //  return response.status(400).json({ error: "name must be unique" });
+  //}
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: String(body.number),
-    id: generateId(),
-  };
+  });
 
-  persons = persons.concat(person);
-
-  response.json(person);
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 });
 
 //GET INFO
