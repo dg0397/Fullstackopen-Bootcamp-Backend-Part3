@@ -124,6 +124,27 @@ app.post("/api/persons", (request, response) => {
   });
 });
 
+//Update a single resource
+
+app.put("/api/persons/:id", (request, response, next) => {
+  const { id } = request.params;
+  const body = request.body;
+  const person = {
+    number: body.number,
+  };
+
+  Person.findByIdAndUpdate(id, person, { new: true })
+    .then((updatedPerson) => {
+      if (updatedPerson) {
+        console.log(updatedPerson);
+        response.json(updatedPerson)
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
+});
+
 //GET INFO
 app.get("/info", (request, response) => {
   response.send(`
