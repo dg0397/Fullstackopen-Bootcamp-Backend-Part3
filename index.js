@@ -52,6 +52,7 @@ app.use(
 app.use(express.static("build"));
 
 //GET ALL PERSONS
+
 //app.get("/api/persons", (request, response) => {
 //  console.log("GET persons");
 //  response.json(persons);
@@ -77,11 +78,28 @@ app.get("/api/persons/:id", (request, response) => {
 });
 
 //DELETE A SINGLE RESOURCE
-app.delete("/api/persons/:id", (request, response) => {
-  const { id } = request.params;
-  persons = persons.filter((person) => person.id !== Number(id));
 
-  response.status(204).end();
+//app.delete("/api/persons/:id", (request, response) => {
+//  const { id } = request.params;
+//  persons = persons.filter((person) => person.id !== Number(id));
+//
+//  response.status(204).end();
+//});
+
+//With MongoDB
+
+app.delete("/api/persons/:id", (request, response, next) => {
+  const { id } = request.params;
+  Person.findByIdAndRemove(id)
+    .then((result) => {
+      if (result) {
+        console.log(result);
+        response.status(200).end();
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
 });
 
 //CREATE A NEW RESOURCE
@@ -101,9 +119,9 @@ app.post("/api/persons", (request, response) => {
     number: String(body.number),
   });
 
-  person.save().then(savedPerson => {
-    response.json(savedPerson)
-  })
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
 });
 
 //GET INFO
