@@ -67,14 +67,28 @@ app.get("/api/persons", (request, response) => {
 });
 
 //GET A SINGLE PERSON
-app.get("/api/persons/:id", (request, response) => {
+//app.get("/api/persons/:id", (request, response) => {
+//  const { id } = request.params;
+//  const person = persons.find((person) => person.id === Number(id));
+//  if (person) {
+//    response.json(person);
+//  } else {
+//    response.status(404).end();
+//  }
+//});
+
+app.get("/api/persons/:id", (request, response, next) => {
   const { id } = request.params;
-  const person = persons.find((person) => person.id === Number(id));
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
-  }
+
+  Person.findById(id)
+    .then((person) => {
+      if (person) {
+        response.json(person);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
 });
 
 //DELETE A SINGLE RESOURCE
@@ -137,7 +151,7 @@ app.put("/api/persons/:id", (request, response, next) => {
     .then((updatedPerson) => {
       if (updatedPerson) {
         console.log(updatedPerson);
-        response.json(updatedPerson)
+        response.json(updatedPerson);
       } else {
         response.status(404).end();
       }
@@ -146,9 +160,11 @@ app.put("/api/persons/:id", (request, response, next) => {
 });
 
 //GET INFO
-app.get("/info", (request, response) => {
+app.get("/info", async (request, response) => {
+  const total = await Person.countDocuments({});
+  console.log(total);
   response.send(`
-  <p>Phonebook has info for ${persons.length} people</p> 
+  <p>Phonebook has info for ${total} people</p> 
   <p>${new Date()}</p>
   `);
 });
